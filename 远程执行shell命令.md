@@ -3,7 +3,7 @@ title: 远程执行shell命令
 comments: true
 thumbnailImage: https://pic.me33.cn/2017-11-28-092424.png
 thumbnailImagePosition: right
-date: 2017-09-25 22:38:01
+date: 2017-11-27
 tags:
  - shell
  - hexo

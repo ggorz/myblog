@@ -50,7 +50,7 @@ service docker status
 cat /var/log/docker   // 查看docker日志
 
 
-### docker ce ee区别  
+### docker ce和ee区别  
  - CE（Community Edition）社区版本
  - EE（Enterprise Edition）企业版本  
  详细区别见: [https://itmuch.com/docker/docker-1/](https://itmuch.com/docker/docker-1/)

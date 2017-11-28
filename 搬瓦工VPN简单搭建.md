@@ -1,0 +1,115 @@
+title: 搬瓦工服务器安装VPN
+date: 2017-05-06 13:14:15
+comments: true
+tags:
+ - shadowsocks
+ - vpn
+categories:
+ - linux
+keywords:
+ - shadowsocks
+ - 搬瓦工
+thumbnailImage: https://pic.me33.cn/2017-09-21-120641.jpg
+thumbnailImagePosition: right
+----
+'Lightweight and fast, take easy and have a nice day.'
+搬瓦工现在服务器后台现在已经可以一键安装Shadowsocks Server 并且也可以直接配置相当的方便，只需要简单几步就可以安装好Shadowsocks服务 windows mac Android ios客户端下载官方地址 socks.org/en/index.html)
+[http://shadowsocks.org/en/index.html](http://shadowsocks.org/en/index.html)
+
+
+<!-- excerpt -->
+<!-- toc -->
+
+
+# 搬瓦工服务器
+搬瓦工 bandwagonhost.com  （需要翻墙）
+
+## 网址首页
+![网站首页](https://pic.me33.cn/2017-05-07-banwagongshouye.png)
+## 注册账号
+Register 注册账号的时候不会核实你的身份信息，所以可以随便填写，邮箱和电话最好是正确的。这里我的state选的是United States,国外地址的邮编可以从网上查；这里有一个好用的邮编查询网站[https://www.nowmsg.com/](https://www.nowmsg.com/findzip/us_city_zip.asp)
+![注册账号](https://pic.me33.cn/2017-05-07-zhuceyemian.png)
+## 选择服务器
+这里我选择的是最便宜的那款2.99美元折合人民币是20.75每月，500G的流量，基本够用了。购买的时候可以用支付宝付款，这是很方便的一点。
+服务器系统我安装的是centos
+![选择服务器](https://pic.me33.cn/2017-05-07-fuwuqiliebiao.png)
+## 购买后
+在Service>My Service下可以看到自己的服务器列表；
+点击kiwiVm Control Panel 可以进入服务器管理后台
+![购买后](https://pic.me33.cn/2017-05-07-goumaiwan.png)
+## 管理后台
+这里我们可以通过它提供的页面工具，连接自己的服务器。用命令行操作
+![管理后台](https://pic.me33.cn/2017-05-07-1houtaijiandan.png)
+在管理后台左边最下面可以简单一步安装VPN服务器（好像是必须centos的系统。。。）这里我选择的是shadowsocks在电脑上连接时需要安装客户端
+![shadowsocks](https://pic.me33.cn/2017-05-07-2anzhuangshadowsocks.png)
+## 配置shadowsocks
+配置shadowsocks
+
+shadowsocks有两种配置方法，一种是命令行参数配置，一种是配置文件。先来说说命令行配置吧。
+
+#### 命令行参数配置
+
+命令行参数如下：
+
+|参数名|参数意义|
+| ---- | ------ |
+|-s    |服务器地址|
+|-p    |服务器端口号|
+|-k |服务器密码|
+|-m    |服务器加密方式|
+|-t    |服务器超时时间|
+|-c    |配置文件路径|
+|–fast-open |快速打开模式，仅Unix/Linux系统可用|
+|–workers    |工作者数量|
+每次运行shadowsocks都将一大堆参数传进去是件很麻烦的事情。所以一般情况下都是采用配置文件的方式来配置的。然后通过-c参数将配置文件路径传入。
+#### 配置文件
+shadowsocks的配置文件是一个json形式的文件，各参数的意义和命令行参数意义相同。
+```
+{
+    "server":"my_server_ip",
+    "server_port":8388,
+    "local_address": "127.0.0.1",
+    "local_port":1080,
+    "password":"mypassword",
+    "timeout":300,
+    "method":"aes-256-cfb",
+    "fast_open": false
+}
+```
+服务器地址就写服务器的ip地址，不要写127.0.0.1。端口号可以自己写，但是不要占用其他服务的端口。本地地址和本地端口是客户端使用的，服务端可以不用理会。密码尽量采用复杂一点的密码，以保证安全性。加密方式使用aes-256-cfb就可以了。如果服务器是Linux系统的话，打开fast_open。
+
+配置文件编辑完毕之后，就可以运行shadowsocks了。前台运行：
+
+```
+ssserver -c/etc/shadowsocks/config.json
+```
+后台运行和停止：
+
+```
+ssserver -c /etc/shadowsocks.json -d start
+ssserver -c /etc/shadowsocks.json -d stop
+```
+以上都是在root用户下运行的。以root方式运行可能会有一些安全问题。所以一般都是使用普通用户运行：
+
+```
+ssserver -c /etc/shadowsocks.json --user nobody -d start
+```
+以上都需要自己手动运行命令来启动shadowsocks。要让shadowsocks在系统启动时自动运行，需要在/etc/rc.local中添加命令。
+
+```
+sudo ssserver -c /etc/shadowsocks.json --user nobody -d start
+```
+## shadowsocks优化
+需要服务器是Linux 3.5及以上。
+编辑/etc/security/limits.conf文件，添加以下两行：
+
+```
+* soft nofile 51200
+* hard nofile 51200
+```
+然后，在启动shadowsocks服务器之前，先设置一下ulimit：
+
+```
+ulimit -n 51200
+```
+更多配置参考链接:[配置shadowsocks服务端](https://blog.csdn.net/u011054333/article/details/52496303)

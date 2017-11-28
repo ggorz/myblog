@@ -1,0 +1,97 @@
+---
+title: python升级高版本
+comments: true
+thumbnailImage: https://pic.me33.cn/2017-09-29-064217.jpg
+thumbnailImagePosition: right
+date: 2017-09-29 14:41:33
+tags:
+ - linux
+ - python
+categories:
+ - linux
+keywords:
+ - python升级
+ - python
+---
+
+百度百科:Python是纯粹的自由软件， 源代码和解释器CPython遵循 GPL(GNU General Public License)协议  。Python语法简洁清晰，特色之一是强制用空白符(white space)作为语句缩进。
+<!-- excerpt -->
+<!-- toc -->
+
+### 怎么样升级Python
+
+###### 查看Python版本
+python -V || python --version
+
+
+###### python 下载地址   
+[https://www.python.org/ftp/python/](https://www.python.org/ftp/python/)  
+
+###### 安装
+``` shell
+wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0a1.tgz
+
+tar zxvf Python-3.7.0a1.tgz
+
+cd Python-3.7.0a1
+
+./configure 
+
+make 
+
+make install
+```
+
+###### 安装出错
+报错没有找到模块：ModuleNotFoundError: No module named '_ctypes'  
+ Python提供了ctypes这个包，可以很容易的使用Python直接调用C语言实现的接口，这使得开发的工作量大大降低，只是ctypes是基于libffi实现的跨语言封装，性能上可能会比使用C Extending来得慢一些  
+ 
+不过还是安装成功，问题是
+python2.6.6 引用ctypes时不会报错
+![](https://pic.me33.cn/2017-09-29-015403.jpg)
+
+而python3 引用ctypes时会提示找不到模块 '_ctypes'
+![](https://pic.me33.cn/2017-09-29-015447.jpg)
+
+
+知乎专栏: [聊聊Python ctypes 模块](https://zhuanlan.zhihu.com/p/20152309)
+
+###### python 安装ctypes模块
+
+大概找了一下网上的帖子没找到，只能重新安装搞版本的python3.5.0,这次没有出现上面的错误。应该是包的问题无疑了。
+
+###### 修改默认的python
+
+```
+mv /usr/bin/python /usr/bin/python.old
+ln -s /usr/local/bin/python3.7 /usr/bin/python
+
+# 修改yum中Python的执行程序
+vim /usr/bin/yum
+将第一行的#!/usr/bin/python修改为系统原有的python版本地址#!/usr/bin/python2.6
+
+```
+###### 安装pip
+Pip是一个安装和管理python包的工具。
+安装方法如下：  
+1. 下载pip，地址 https://bootstrap.pypa.io/get-pip.py  
+2. 执行安装命令  
+```
+yum install setuptool zlib* -y
+python get-pip.py
+```
+缺少_ctypes模块安装不成功
+
+3. 安装成功
+![](https://pic.me33.cn/2017-09-29-060644.jpg)
+
+
+###### python3 方向键不能使用的解决方法
+安装完成python3之后，使用方向键的时候发现不能显示不对。查了下是一个库没有安装
+```
+pip install readline
+```
+
+###### ipython是什么？命令行python编辑神器
+官网：[http://ipython.org](http://ipython.org)  
+文档：[http://ipython.org/documentation.html](http://ipython.org/documentation.html)

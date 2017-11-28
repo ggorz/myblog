@@ -1,0 +1,129 @@
+title: hexo的tranquilpeak配置畅言
+date: 2017-08-20 13:22:11
+comments: true
+tags:
+ - hexo
+categories:
+ - linux
+keywords:
+ - hexo
+thumbnailImage: https://pic.me33.cn/2017-08-21-124750.jpg
+thumbnailImagePosition: right
+------
+国内比较好的第三方评论有多说、网易云跟帖和搜狐的畅言，不过现在多说和网易云跟帖都关闭服务了.由于tranquilpeak本身不支持畅言，这就需要自己加代码.
+<!-- excerpt -->
+<!-- toc -->
+
+### 1.注册畅言，根据提示操作
+#### 获取安装代码
+```
+<!--PC和WAP自适应版-->
+<div id="SOHUCS" sid="请将此处替换为配置SourceID的语句" ></div> 
+<script type="text/javascript"> 
+(function(){ 
+var appid = 'cytaU5QOG'; 
+var conf = 'prod_c4bc81bxxxxxxx135106f13126afbad5'; 
+var width = window.innerWidth || document.documentElement.clientWidth; 
+if (width < 960) { 
+window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})}); } })(); </script>
+```
+![](https://pic.me33.cn/2017-08-21-124750.jpg)
+我选择的是通用自适应的安装代码  
+
+**注意：** 如果网站是https需要把代码中链接改为https；不过也可以把http: 这个去掉；
+
+### 2.修改themes/tranquilpeak/layout/_partial/post.ejs
+
+`vim themes/tranquilpeak/layout/_partial/post.ejs`  把文件下面关于comments的代码修改为：
+```
+<% if (post.comments) { %>
+    <% if (theme.changyan_enable) { %>
+        <%- partial('post/changyan') %>
+    <% } else if (theme.disqus_shortname) { %>
+        <%- partial('post/disqus') %>
+    <% } else if (theme.duoshuo_shortname) { %>
+        <%- partial('post/duoshuo') %>
+    <% } %>
+<% } %>
+```
+### 3.创建'post/changyan'
+```
+cd themes/tranquilpeak/layout/_partial/post
+touch changyan.ejs
+vim changyan.ejs
+
+// 在changyan.ejs添加一行内容(安装代码中的div结构)
+<div id="SOHUCS" sid="<%= post.title %>" ></div>
+
+```
+### 4.修改themes/tranquilpeak/layout/_partial/script.ejs
+在“if (theme.disqus_shortname)”上面加入畅言的js代码
+```
+<!--SCRIPTS-->
+<%- js('assets/js/jquery.js') %>
+<%- js('assets/js/jquery.fancybox.js') %>
+<%- js('assets/js/jquery.fancybox-thumbs.js') %>
+<%- js('assets/js/tranquilpeak.js') %>
+<!--SCRIPTS END-->
+<% if (post.comments) { %>
+    <% if (theme.changyan_enable) { %>
+<script type="text/javascript"> 
+(function(){ 
+var appid = "<%= theme.changyan_appid %>"; 
+var conf = "<%= theme.changyan_appkey %>"; 
+var width = window.innerWidth || document.documentElement.clientWidth; 
+if (width < 960) { 
+window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="//changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("//changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})}); } })(); </script>
+    <% } else if (theme.disqus_shortname) { %>
+        <script>
+             var disqus_config = function () {
+                 this.page.url = '<%= post.permalink %>';
+                 <% if (post.disqusIdentifier) { %>
+                    this.page.identifier = '<%= post.disqusIdentifier %>';
+                 <% } else { %>
+                    this.page.identifier = '<%= post.path %>';
+                 <% } %>
+             };
+            (function() {
+                var d = document, s = d.createElement('script');
+                var disqus_shortname = '<%= theme.disqus_shortname %>';
+                s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    <% } else if (theme.duoshuo_shortname) { %>
+        <script type="text/javascript">
+            var duoshuoQuery = {short_name:'<%= theme.duoshuo_shortname %>'};
+            (function() {
+                var ds = document.createElement('script');
+                ds.type = 'text/javascript';ds.async = true;
+                ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+                ds.charset = 'UTF-8';
+                (document.getElementsByTagName('head')[0]
+                || document.getElementsByTagName('body')[0]).appendChild(ds);
+            })();
+        </script>
+    <% } %>
+<% } %>
+<% if (config.algolia && config.algolia.appId && config.algolia.apiKey && config.algolia.indexName) { %>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment-with-locales.min.js"></script>
+    <script src="//cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script>
+    <script>
+        var algoliaClient = algoliasearch('<%= config.algolia.appId %>', '<%= config.algolia.apiKey %>');
+        var algoliaIndex = algoliaClient.initIndex('<%= config.algolia.indexName %>');
+    </script>
+<% } %>
+
+```
+### 5.在主题中的_config.xml配置参数
+```
+changyan_enable: true
+changyan_appid: cytaU5QOG
+changyan_appkey: 90d888888888e32236c5103463
+```
+
+### 6.完成
+
+重新发布即可

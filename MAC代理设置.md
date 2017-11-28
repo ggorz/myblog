@@ -1,0 +1,78 @@
+---
+title: MAC代理设置
+comments: true
+thumbnailImage: https://pic.me33.cn/2017-09-23-080508.jpg
+thumbnailImagePosition: right
+date: 2017-09-21 22:55:43
+tags:
+ - mac
+ - 抓包
+categories:
+ - mac
+keywords:
+ - charles
+ - 抓包
+---
+charler 可以做http代理、HTTP 抓包工具；反向代理可以是开发者查看http和SSL / HTTPS 客户端与Internet之间的网络请求，包含request
+<!-- excerpt -->
+<!-- toc -->
+
+### charles设置安装CA证书
+v3.10版本之后可以通过help中直接安装CA证书  
+
+![](https://pic.me33.cn/2017-09-22-082924.jpg)  
+
+之后会弹出钥匙串，如果不弹出，请自行打开钥匙串，如下图：  
+
+![](https://pic.me33.cn/2017-09-22-082956.jpg)  
+
+系统默认是不信任 Charles 的证书的，此时对证书右键，在弹出的下拉菜单中选择『显示简介』，点击使用此证书时，把使用系统默认改为始终信任，如下图：  
+
+![](https://pic.me33.cn/2017-09-22-083012.jpg)  
+
+然后关闭，就会发现 charles 的证书已经被信任了，如下图：  
+
+![](https://pic.me33.cn/2017-09-22-083054.jpg)  
+
+##### 然而
+安装完证书之后抓取https数据还是乱码  
+
+![](https://pic.me33.cn/2017-09-23-071646.jpg)
+
+有个这样的提示：
+SSL Proxying not enabled for this host: enable in Proxy Settings, SSL locations  
+![](https://pic.me33.cn/2017-09-23-073255.jpg)  
+添加如下操作,当然也可以添加固定的网址如 m.baidu.com charles推荐进行单一的配置  
+![](https://pic.me33.cn/2017-09-23-073606.jpg)  
+
+### Charles抓取手机数据
+
+移动设备需要与PC连接同一个网络
+查看本机IP  
+![](https://pic.me33.cn/2017-09-23-074416.jpg)  
+
+选择安装移动端证书时会有这样的提示
+Configure your device to use Charles as its HTTP proxy on 10.16.0.143:8888, then browse to chls.pro/ssl to download and install the certificate.
+
+ios设备：  
+打开网址chls.pro/ssl  
+![](https://pic.me33.cn/2017-09-23-075150.jpg)
+在iPhone无线局域网设置中添加http代理 10.16.0.143:8888  
+此时就可以收集到手机的访问数据了，如果获取不到 https 的数据，需要单独配置固定网址的ssl和上面的SSL Proxying Setting操作一样
+
+安卓设备：  
+打开网址chls.pro/ssl 下载证书  
+![](https://pic.me33.cn/2017-09-23-080045.jpg)
+
+
+### charles 解决中文乱码
+开启rewrite功能
+![](https://pic.me33.cn/2017-09-23-070855.jpg)
+点击左下角的add按钮添加一条规则，下面是添加完后的样子
+![](https://pic.me33.cn/2017-09-23-070953.jpg)
+右侧name写Charset  
+location 不用写
+点击右侧最下面的add按钮，添加内容和下图一样保存即可  
+![](https://pic.me33.cn/2017-09-23-071158.jpg)
+
+

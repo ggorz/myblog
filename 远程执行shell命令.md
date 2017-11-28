@@ -1,7 +1,7 @@
 ---
 title: 远程执行shell命令
 comments: true
-thumbnailImage: https://pic.me33.cn/2017-09-25-143640.jpg
+thumbnailImage: https://pic.me33.cn/2017-11-28-092424.png
 thumbnailImagePosition: right
 date: 2017-09-25 22:38:01
 tags:
@@ -14,7 +14,7 @@ keywords:
  - shell
 ---
 
-shell执行远程命令
+shell执行远程命令；hexo远程发布；心酸的历程
 <!-- excerpt -->
 <!-- toc -->
 
@@ -23,5 +23,6 @@ shell执行远程命令
 
 本地服务器
 ![](https://pic.me33.cn/2017-11-28-085928.png)
+
 
 

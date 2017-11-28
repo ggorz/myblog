@@ -24,5 +24,6 @@ shell执行远程命令；hexo远程发布；心酸的历程
 本地服务器
 ![](https://pic.me33.cn/2017-11-28-085928.png)
 
-
+### 解决 ssh user@ip 'command' 出现 'command not found'的问题
+转载[http://blog.csdn.net/whitehack/article/details/51705974](http://blog.csdn.net/whitehack/article/details/51705974)
 

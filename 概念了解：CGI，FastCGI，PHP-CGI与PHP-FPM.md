@@ -21,7 +21,7 @@ keywords:
 
 
 转载:[概念了解：CGI，FastCGI，PHP-CGI与PHP-FPM](http://www.nowamagic.net/librarys/veda/detail/1319/)
-将的很详细
+讲的很详细
 
 <!-- excerpt -->
 <!-- toc -->

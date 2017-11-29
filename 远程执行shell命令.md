@@ -34,7 +34,7 @@ echo 'done'
 ```
 
 远程服务器
-```
+```bash
 #!/bin/bash
 cd /Data/webapps/blog/source/_posts
 git pull
@@ -54,7 +54,7 @@ hexo g
 
 ### shell中怎么判断上条命令执行完成
 1.通过创建finished文件判断
-```
+```bash
 #!/bin/bash
 
 func()
@@ -75,7 +75,7 @@ rm -f finished
 ```
 
 2.$?符号显示上一条命令的返回值，如果为0则代表执行成功，其他表示失败。
-```
+```bash
 if [[ $? -eq 0 ]];then A else b;fi
 
 #简单点：

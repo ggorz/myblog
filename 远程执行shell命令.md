@@ -50,3 +50,45 @@ hexo g
 原因：在远程服务器上执行echo $PATH与 ssh -t -p 20 root@ip "echo $PATH"的值是不同的
       所以会出现远程执行命令 command not found 的错误
 解决办法 加上"soucre /etc/profile"
+
+
+### shell中怎么判断上条命令执行完成
+1.通过创建finished文件判断
+```
+#!/bin/bash
+
+func()
+{
+    wget ...
+    touch finished
+}
+
+func &
+sleep 3000
+if [ -f finished ]
+then
+    echo "finished"
+else
+    echo "not finished"
+fi
+rm -f finished
+```
+
+2.$?符号显示上一条命令的返回值，如果为0则代表执行成功，其他表示失败。
+```
+if [[ $? -eq 0 ]];then A else b;fi
+
+#简单点：
+#mkdir /xxx && echo A ||echo B
+
+#或者用if判断：
+#mkdir /xxx
+if [ $? -eq 0 ];then
+  echo A
+else
+  echo B
+fi
+ ```
+
+
+

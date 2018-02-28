@@ -1,7 +1,7 @@
 ---
 title: iterm2快捷键大全 Mac item2常用快捷键
 comments: true
-thumbnailImage:https://pic.me33.cn/2018-02-28-024255.png
+thumbnailImage: https://pic.me33.cn/2018-02-28-024255.png
 thumbnailImagePosition: right
 date: 2018-01-22 22:30:00
 tags:

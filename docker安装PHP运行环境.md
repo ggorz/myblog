@@ -114,7 +114,6 @@ docker run -p 9000:9000 --name myphp \
 --privileged=true \
 -d php:7.1.0-fpm
 ```
-{{.NetworkSettings.IPAddress}}
 
 查看php镜像的ip地址
 

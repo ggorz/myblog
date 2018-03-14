@@ -106,6 +106,26 @@ server {
 ```
 
 ## 搭建环境
+#### 1.启动php镜像
+
+```
+docker run -p 9000:9000 --name myphp \
+-v /docker/www/:/var/www/html/ \
+--privileged=true \
+-d php:7.1.0-fpm
+```
+
+
+
+#### 2.启动nginx镜像
+
+```
+docker run -p 80:80 --name mynginx \
+-v /docker/www:/usr/share/nginx/html \
+-v /docker/nginx/conf.d:/etc/nginx/conf.d \
+--privileged=true \
+-d nginx
+```
 
 #### 3.查看镜像运行状态
 docker ps

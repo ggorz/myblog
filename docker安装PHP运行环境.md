@@ -108,12 +108,7 @@ server {
 ## 搭建环境
 #### 1.启动php镜像
 
-```
-docker run -p 9000:9000 --name myphp \
--v /docker/www/:/var/www/html/ \
---privileged=true \
--d php:7.1.0-fpm
-```
+
 
 查看php镜像的ip地址
 
@@ -129,13 +124,7 @@ fastcgi_pass 172.17.0.2:9000;
 
 #### 2.启动nginx镜像
 
-```
-docker run -p 80:80 --name mynginx \
--v /docker/www:/usr/share/nginx/html \
--v /docker/nginx/conf.d:/etc/nginx/conf.d \
---privileged=true \
--d nginx
-```
+
 
 #### 3.查看镜像运行状态
 docker ps
@@ -147,3 +136,63 @@ e93281652098  php:7.1.0-fpm  "docker-php-entrypoin" 8 minutes ago  Up 8 minutes
 #### 4.生成php测试文件info.php
 
 `echo "<?php phpinfo();" > /docker/www/info.php`
+
+## nginx虚拟机配置
+以配置www.test.com虚拟机为例,项目目录地址为/docker/www/test.com/
+
+```
+vim /docker/nginx/conf.d/test.com.conf
+
+# 示例内容如下
+
+server {
+  listen  80;
+  server_name www.test.com;
+  root   /usr/share/nginx/html/test.com/;
+  location / {
+   index index.html index.htm index.php;
+   autoindex off;
+  }
+  location ~ \.php(.*)$ {
+   root   /var/www/html/test.com/;
+   fastcgi_pass 172.17.0.2:9000;
+   fastcgi_index index.php;
+   fastcgi_split_path_info ^((?U).+\.php)(/?.+)$;
+   fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+   fastcgi_param PATH_INFO $fastcgi_path_info;
+   fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
+   include  fastcgi_params;
+  }
+}
+
+
+#重启nginx镜像
+
+docker restart mynginx
+```
+
+## docker常用命令
+1、停止所有正在运行的容器  
+docker kill $(docker ps -a -q)  
+2、删除所有已停止运行的容器  
+docker rm $(docker ps -a -q)  
+3、查看容器运行状态  
+docker stats  
+4、进入容器内进行命令行操作  
+docker exec -it content-name-or-id /bin/bash
+
+## 常见问题
+
+```
+#############方法一#############
+#在宿主主机关闭SELINUX
+#临时关闭
+setenforce 0
+#永久关闭 修改/etc/sysconfig/selinux文件
+SELINUX=disabled
+
+#############方法二#############
+#以特权方式运行容器
+#--privileged参数为true
+docker run -it --privileged=true -d nginx
+```

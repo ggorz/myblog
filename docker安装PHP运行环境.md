@@ -105,37 +105,7 @@ server {
 }
 ```
 
-## 搭建环境
-#### 1.启动php镜像
 
-
-
-查看php镜像的ip地址
-
-`docker inspect --format='{{.NetworkSettings.IPAddress}}' myphp`
-
-172.17.0.2
-
-修改default.conf配置文件，使fastcgi_pass的值为 172.17.0.2:9000
-
-`vim /docker/nginx/conf.d/default.conf`
-
-fastcgi_pass 172.17.0.2:9000;
-
-#### 2.启动nginx镜像
-
-
-
-#### 3.查看镜像运行状态
-docker ps
-
-CONTAINER ID  IMAGE    COMMAND     CREATED    STATUS    PORTS          NAMES
-93213e1eac73  nginx    "nginx -g 'daemon off" 3 seconds ago  Up 2 seconds  0.0.0.0:80->80/tcp mynginx
-e93281652098  php:7.1.0-fpm  "docker-php-entrypoin" 8 minutes ago  Up 8 minutes 
-
-#### 4.生成php测试文件info.php
-
-`echo "<?php phpinfo();" > /docker/www/info.php`
 
 ## nginx虚拟机配置
 以配置www.test.com虚拟机为例,项目目录地址为/docker/www/test.com/

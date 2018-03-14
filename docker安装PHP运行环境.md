@@ -117,7 +117,9 @@ docker run -p 9000:9000 --name myphp \
 
 查看php镜像的ip地址
 
+```shell
 docker inspect --format='{{.NetworkSettings.IPAddress}}' myphp
+```
 
 172.17.0.2
 

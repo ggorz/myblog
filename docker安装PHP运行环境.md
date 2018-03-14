@@ -115,7 +115,17 @@ docker run -p 9000:9000 --name myphp \
 -d php:7.1.0-fpm
 ```
 
+查看php镜像的ip地址
 
+docker inspect --format='{{.NetworkSettings.IPAddress}}' myphp
+
+172.17.0.2
+
+修改default.conf配置文件，使fastcgi_pass的值为 172.17.0.2:9000
+
+vim /docker/nginx/conf.d/default.conf
+
+fastcgi_pass 172.17.0.2:9000;
 
 #### 2.启动nginx镜像
 

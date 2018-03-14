@@ -125,7 +125,9 @@ docker inspect --format='{{.NetworkSettings.IPAddress}}' myphp
 
 修改default.conf配置文件，使fastcgi_pass的值为 172.17.0.2:9000
 
+```shell
 vim /docker/nginx/conf.d/default.conf
+```
 
 fastcgi_pass 172.17.0.2:9000;
 

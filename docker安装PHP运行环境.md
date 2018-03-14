@@ -62,21 +62,21 @@ Feb 25 17:26:11 joinApp2 systemd[1]: docker.service failed.
 
 #### 2.下载相关镜像
 
-```shell
+```
 docker pull nginx
 docker pull php:7.1.0-fpm
 ```
 
 #### 3.建立相关目录
 
-```shell
+```
 mkdir -p /docker/www
 mkdir -p /docker/nginx/conf.d
 ```
 
 #### 4.编辑default.conf
 
-```shell
+```
 vim /docker/nginx/conf.d/default.conf
 ```
 
@@ -108,7 +108,7 @@ server {
 ## 搭建环境
 #### 1.启动php镜像
 
-```shell
+```
 docker run -p 9000:9000 --name myphp \
 -v /docker/www/:/var/www/html/ \
 --privileged=true \
@@ -129,7 +129,7 @@ fastcgi_pass 172.17.0.2:9000;
 
 #### 2.启动nginx镜像
 
-```shell
+```
 docker run -p 80:80 --name mynginx \
 -v /docker/www:/usr/share/nginx/html \
 -v /docker/nginx/conf.d:/etc/nginx/conf.d \
@@ -151,7 +151,7 @@ e93281652098  php:7.1.0-fpm  "docker-php-entrypoin" 8 minutes ago  Up 8 minutes
 ## nginx虚拟机配置
 以配置www.test.com虚拟机为例,项目目录地址为/docker/www/test.com/
 
-```shell
+```
 vim /docker/nginx/conf.d/test.com.conf
 
 # 示例内容如下
@@ -194,7 +194,7 @@ docker exec -it content-name-or-id /bin/bash
 
 ## 常见问题
 
-```shell
+```
 #############方法一#############
 #在宿主主机关闭SELINUX
 #临时关闭

@@ -41,7 +41,7 @@ service docker restart
 
 ```
 [root@joinApp2 ~]# systemctl status docker.service
-● docker.service - Docker Application Container Engine
+docker.service - Docker Application Container Engine
    Loaded: loaded (/usr/lib/systemd/system/docker.service; enabled; vendor preset: disabled)
    Active: failed (Result: start-limit) since Thu 2016-02-25 17:26:11 CST; 16s ago
      Docs: http://docs.docker.com Process: 16384 ExecStart=/usr/bin/docker daemon $OPTIONS $DOCKER_STORAGE_OPTIONS $DOCKER_NETWORK_OPTIONS $ADD_REGISTRY $BLOCK_REGISTRY $INSECURE_REGISTRY (code=exited, status=1/FAILURE)

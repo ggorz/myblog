@@ -31,11 +31,14 @@ nginx相关目录：/docker/nginx/conf.d
 ## 准备工作
 
 #### 1.使用docker加速器
+
 ```
 curl -sSL https://get.daocloud.io/daotools/set_mirror.sh | sh -s http://68abbefd.m.daocloud.io
 service docker restart
 ```
+
 执行 service docker restart 报错：
+
 ```
 [root@joinApp2 ~]# systemctl status docker.service
 ● docker.service - Docker Application Container Engine
@@ -58,21 +61,27 @@ Feb 25 17:26:11 joinApp2 systemd[1]: docker.service failed.
 原因：执行了一下curl -sSL https://get.daocloud.io/daotools/set_mirror.sh | sh -s http://*******.m.daocloud.io 语句，然后 在这个文件中的/etc/docker/daemon.json 格式就变了{"registry-mirrors": ["http://****.m.daocloud.io"]，} 最后一个多了一个逗号，我猜测是这个shell语句的原因，我把逗号去掉以后，程序可以正常启动。
 
 #### 2.下载相关镜像
+
 ```shell
 docker pull nginx
 docker pull php:7.1.0-fpm
 ```
 
 #### 3.建立相关目录
+
 ```shell
 mkdir -p /docker/www
 mkdir -p /docker/nginx/conf.d
 ```
+
 #### 4.编辑default.conf
+
 ```shell
 vim /docker/nginx/conf.d/default.conf
 ```
+
 以下为示例内容
+
 ```
 server {
   listen  80 default_server;
@@ -95,14 +104,17 @@ server {
   }
 }
 ```
+
 ## 搭建环境
 #### 1.启动php镜像
+
 ```shell
 docker run -p 9000:9000 --name myphp \
 -v /docker/www/:/var/www/html/ \
 --privileged=true \
 -d php:7.1.0-fpm
 ```
+
 查看php镜像的ip地址
 
 `docker inspect --format='{{.NetworkSettings.IPAddress}}' myphp`
@@ -116,6 +128,7 @@ docker run -p 9000:9000 --name myphp \
 fastcgi_pass 172.17.0.2:9000;
 
 #### 2.启动nginx镜像
+
 ```shell
 docker run -p 80:80 --name mynginx \
 -v /docker/www:/usr/share/nginx/html \
@@ -123,6 +136,7 @@ docker run -p 80:80 --name mynginx \
 --privileged=true \
 -d nginx
 ```
+
 #### 3.查看镜像运行状态
 docker ps
 
@@ -131,10 +145,12 @@ CONTAINER ID  IMAGE    COMMAND     CREATED    STATUS    PORTS          NAMES
 e93281652098  php:7.1.0-fpm  "docker-php-entrypoin" 8 minutes ago  Up 8 minutes 
 
 #### 4.生成php测试文件info.php
+
 `echo "<?php phpinfo();" > /docker/www/info.php`
 
 ## nginx虚拟机配置
 以配置www.test.com虚拟机为例,项目目录地址为/docker/www/test.com/
+
 ```shell
 vim /docker/nginx/conf.d/test.com.conf
 
@@ -165,6 +181,7 @@ server {
 
 docker restart mynginx
 ```
+
 ## docker常用命令
 1、停止所有正在运行的容器  
 docker kill $(docker ps -a -q)  
@@ -176,6 +193,7 @@ docker stats
 docker exec -it content-name-or-id /bin/bash
 
 ## 常见问题
+
 ```shell
 #############方法一#############
 #在宿主主机关闭SELINUX

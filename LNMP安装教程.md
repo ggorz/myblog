@@ -13,6 +13,9 @@ keywords:
  - php环境
 ---
 
+linux编译安装lnmp环境，重新建立安装目录，方便项目管理。
+<!-- excerpt -->
+<!-- toc -->
 
 # LNMP安装教程：
 ### 1.准备工作：

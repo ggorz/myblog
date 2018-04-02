@@ -1,0 +1,440 @@
+---
+title: lnmp安装教程
+comments: true
+thumbnailImage: https://pic.me33.cn/2018-04-02-051613.png
+thumbnailImagePosition: right
+date: 2017-04-02 22:30:00
+tags:
+ - lnmp
+categories:
+ - linux
+keywords:
+ - lnmp
+ - php环境
+---
+
+
+# LNMP安装教程：
+### 1.准备工作：
+1）把所有的软件安装在/Data/apps/，源码包放在/Data/tgz/，数据放在/Data/data，日志文件放在/Data/logs，项目放在/Data/webapps，
+```
+mkdir -p /Data/apps/
+mkdir -p /Data/tgz/
+mkdir -p /Data/data/
+mkdir -p /Data/logs/
+mkdir -p /Data/webapps/
+```
+2）安装源码包所需要的依赖包  
+`yum -y install wget openssl* gcc gcc-c++ autoconf libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel libxml2 libxml2-devel zlib zlib-devel glibc glibc-devel glib2 glib2-devel bzip2 bzip2-devel ncurses ncurses-devel curl curl-devel e2fsprogs e2fsprogs-devel krb5 krb5-devel libidn libidn-devel openssl openssl-devel openldap openldap-devel nss_ldap openldap-clients openldap-servers make gd gd2 gd-devel gd2-devel libaio`  
+3）创建www所属组及用户
+```shell
+/usr/sbin/groupadd www
+/usr/sbin/useradd -g www www
+```
+4） 设置系统资源限制  
+`ulimit -SHn 65535`  
+### 2.Nginx安装：
+1）pcre源码安装
+```shell
+cd /Data/tgz/
+wget ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.38.tar.gz
+tar zxvf pcre-8.38.tar.gz
+cd pcre-8.38
+./configure --prefix=/Data/apps/pcre
+make && make install
+```
+2）nginx源码安装：
+```shell
+cd /Data/tgz/
+wget http://nginx.org/download/nginx-1.9.9.tar.gz
+tar zxvf nginx-1.9.9.tar.gz
+cd nginx-1.9.9
+./configure --user=www --group=www --prefix=/Data/apps/nginx --with-http_stub_status_module --with-http_ssl_module --with-pcre=/Data/tgz/pcre-8.38 --with-http_realip_module --with-http_image_filter_module
+make && make install
+```
+### 3.Mysql安装：
+1）mysql源码安装：
+```shell
+cd /Data/tgz/
+wget http://downloads.mysql.com/archives/mysql-5.6/mysql-5.6.12-linux-glibc2.5-x86_64.tar.gz
+tar zxvf mysql-5.6.12-linux-glibc2.5-x86_64.tar.gz
+mv mysql-5.6.12-linux-glibc2.5-x86_64 /Data/apps/mysql
+```
+2）创建mysql所属组及用户：
+```shell
+groupadd mysql
+useradd -r -g mysql mysql
+```
+3）改变mysql软件所属组：
+```shell
+cd /Data/apps
+chown -R mysql:mysql mysql
+```
+4）初始化数据库：
+```shell
+mkdir -p /Data/data/mysql/data
+cd /Data/data
+chown -R mysql:mysql mysql
+su mysql
+/Data/apps/mysql/scripts/mysql_install_db --user=mysql --basedir=/Data/apps/mysql --datadir=/Data/data/mysql/data
+#或
+/Data/apps/mysql/bin/mysqld --initialize --user=mysql --basedir=/Data/apps/mysql --datadir=/Data/data/mysql/data --innodb_undo_tablespaces=3 --explicit_defaults_for_timestamp
+exit
+su root
+```
+
+5）数据库配置文件：
+```shell
+cp /Data/apps/mysql/support-files/my-default.cnf /etc/my.cnf
+cp /Data/apps/mysql/support-files/mysql.server /etc/init.d/mysql
+vi /etc/init.d/mysql
+#修改文件中的两个变更值
+basedir=/Data/apps/mysql
+datadir=/Data/data/mysql/data
+```
+
+6）添加mysql环境变量
+```shell
+vi /etc/profile
+#最后一行添加以下两行：
+export MYSQL_HOME="/Data/apps/mysql"
+export PATH="$PATH:$MYSQL_HOME/bin"
+#保存退出
+source /etc/profile
+```
+7）添加自启动服务
+```shell
+chkconfig --add mysql
+chkconfig mysql on
+```
+8）启动mysql
+```shell
+service mysql start
+#会提示：Starting MySQL.. SUCCESS! 
+#查看mysql服务：
+ps aux|grep mysql
+```
+9）登录mysql及改密s码与配置远程访问
+```shell
+#修改root用户密码
+/Data/apps/mysql/bin/mysqladmin -u root password 'your_password'
+
+#登录mysql,需要输入密码
+/Data/apps/mysql/bin/mysql -u root -p
+
+#允许root用户远程访问
+mysql>GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'your_password' WITH GRANT OPTION;     
+mysql>FLUSH PRIVILEGES;#刷新权限
+mysql>exit
+```
+10）忘记root密码后，如何找回密码
+```shell
+/Data/apps/mysql/bin/mysqld_safe --basedir=/Data/apps/mysql --datadir=/Data/data/mysql/data --skip-grant-tables &
+/Data/apps/mysql/bin/bin/mysql -u root mysql
+UPDATE user SET password=PASSWORD("new_password") WHERE user='root';
+FLUSH PRIVILEGES;
+```
+### 4.Php安装：
+#### 1）php依赖安装，顺序执行： a）创建目录
+```shell
+mkdir -p /Data/apps/libs/
+```
+b）jpeg源码安装
+```shell
+cd /Data/tgz/
+wget http://www.ijg.org/files/jpegsrc.v9.tar.gz     
+tar zxvf jpegsrc.v9.tar.gz
+cd jpeg-9/
+./configure --prefix=/Data/apps/libs --enable-shared --enable-static
+make && make install
+```
+c）libpng源码安装
+```shell
+cd /Data/tgz/
+wget http://prdownloads.sourceforge.net/libpng/libpng-1.6.2.tar.gz
+tar zxvf libpng-1.6.2.tar.gz
+cd libpng-1.6.2/
+./configure --prefix=/Data/apps/libs
+make && make install
+```
+d）freetype源码安装
+```shell
+cd /Data/tgz/
+wget http://download.savannah.gnu.org/releases/freetype/freetype-2.4.12.tar.gz
+tar zxvf freetype-2.4.12.tar.gz
+cd freetype-2.4.12/
+./configure --prefix=/Data/apps/libs
+make && make install
+```
+e）libmcrypt源码安装
+```shell
+cd /Data/tgz/
+wget http://downloads.sourceforge.net/mcrypt/libmcrypt-2.5.8.tar.gz
+tar zxvf libmcrypt-2.5.8.tar.gz
+cd libmcrypt-2.5.8/
+./configure --prefix=/Data/apps/libs
+make && make install
+
+cd libltdl/
+./configure --prefix=/Data/apps/libs --enable-ltdl-install
+make && make install
+```
+f）mhash源码安装
+```shell
+cd /Data/tgz/
+wget http://downloads.sourceforge.net/mhash/mhash-0.9.9.9.tar.gz
+tar zxvf mhash-0.9.9.9.tar.gz
+cd mhash-0.9.9.9/
+./configure --prefix=/Data/apps/libs
+make && make install
+```
+g）libiconv源码安装
+```shell
+cd /Data/tgz/
+wget http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz
+tar -zxvf libiconv-1.14.tar.gz
+cd libiconv-1.14
+./configure --prefix=/Data/apps/libs
+make && make install
+```
+```shell
+#解决./stdio.h:1010:1: 错误：‘gets’未声明(不在函数内) 的问题
+cd srclib/
+sed -i -e '/gets is a security/d' ./stdio.in.h
+cd ../
+make && make install
+```
+h）添加编译时使用的动态链接库的路径
+```shell
+vi /etc/ld.so.conf
+#添加一行
+/Data/apps/libs/lib
+#生效
+ldconfig
+```
+i）mcrypt源码安装
+```shell
+cd /Data/tgz/
+wget http://downloads.sourceforge.net/mcrypt/mcrypt-2.6.8.tar.gz
+tar zxvf mcrypt-2.6.8.tar.gz
+cd mcrypt-2.6.8/
+export LDFLAGS="-L/Data/apps/libs/lib -L/usr/lib"
+export CFLAGS="-I/Data/apps/libs/include -I/usr/include"
+touch malloc.h
+./configure --prefix=/Data/apps/libs --with-libmcrypt-prefix=/Data/apps/libs
+make && make install
+```
+#### 2）php编译安装：
+a）php7源码安装
+```shell
+
+
+cd /Data/tgz
+wget http://cn2.php.net/distributions/php-7.0.6.tar.gz
+tar xzvf php-7.0.6.tar.gz 
+cd php-7.0.6
+
+export LIBS="-lm -ltermcap -lresolv"
+export DYLD_LIBRARY_PATH="/Data/apps/mysql/lib/:/lib/:/usr/lib/:/usr/local/lib:/lib64/:/usr/lib64/:/usr/local/lib64"
+export LD_LIBRARY_PATH="/Data/apps/mysql/lib/:/lib/:/usr/lib/:/usr/local/lib:/lib64/:/usr/lib64/:/usr/local/lib64"
+
+#./configure --help
+
+./configure --prefix=/Data/apps/php7 --with-config-file-path=/Data/apps/php7/etc --with-mysqli=/Data/apps/mysql/bin/mysql_config --with-iconv=/Data/apps/libs/ --with-freetype-dir=/Data/apps/libs --with-jpeg-dir=/Data/apps/libs --with-png-dir=/Data/apps/libs --with-zlib --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-bcmath --enable-shmop --enable-sysvsem --enable-inline-optimization --with-curl --enable-mbregex --enable-fpm --enable-mbstring --with-mcrypt=/Data/apps/libs --with-gd --enable-gd-native-ttf --with-openssl --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --with-bz2 --enable-soap --enable-opcache --with-pdo-mysql --enable-maintainer-zts --enable-pcntl --enable-shmop --enable-sysvmsg --enable-sysvsem --enable-sysvshm --without-pear --with-gettext  --enable-fpm --enable-opcache=no
+```
+```shell
+#备注：较之前的版本，去除的选项（不全）
+	--with-mysql
+	--with-mime-magic
+	--enable-fastcgi
+	--enable-force-CGI-redirect
+
+make && make install
+
+// 编译时候报错：
+/lib/zipint.h:147:2: error: #error unsupported size of off_t
+解决：vi /etc/ld.so.conf.d/local.conf //创建local.conf
+/usr/local/lib //添加输入
+ldconfig -v //执行命令
+make clean
+
+cp php.ini-development /Data/apps/php7/etc/php.ini
+cp ./sapi/fpm/php-fpm.conf /Data/apps/php7/etc/php-fpm.conf
+cp /Data/apps/php7/etc/php-fpm.d/www.conf.default /Data/apps/php7/etc/php-fpm.d/www.conf
+
+#下面是为了php-fpm随系统自启动。
+cp ./sapi/fpm/init.d.php-fpm /etc/init.d/php-fpm
+
+#更改php-fpm启动用户
+vi /Data/apps/php7/etc/php-fpm.d/www.conf
+#把下面两行
+user = nobody
+group = nobody
+#改为：
+user = www
+group = www
+
+#启动php
+/Data/apps/php7/sbin/php-fpm 
+
+#查看进程
+ps aux|grep php-fpm
+```
+#### 3）php扩展安装： 
+a）yaf扩展安装yaf.so
+```shell
+cd /Data/tgz
+wget http://pecl.php.net/get/yaf-3.0.2.tgz
+tar zxvf yaf-3.0.2.tgz
+cd yaf-3.0.2
+/Data/apps/php7/bin/phpize
+./configure --with-php-config=/Data/apps/php7/bin/php-config
+make && make install
+```
+b）redis扩展安装redis.so
+```shell
+cd /Data/tgz
+wget https://github.com/edtechd/phpredis/archive/php7.zip
+unzip php7.zip
+
+cd phpredis-php7
+/Data/apps/php7/bin/phpize
+./configure --with-php-config=/Data/apps/php7/bin/php-configc
+make && make install
+```
+c）msgpack扩展安装msgpack.so
+```shell
+cd /Data/tgz
+wget http://pecl.php.net/get/msgpack-2.0.1.tgz
+tar zxvf msgpack-2.0.1.tgz
+cd msgpack-2.0.1
+/Data/apps/php7/bin/phpize
+./configure --with-php-config=/Data/apps/php7/bin/php-config
+make && make install
+```
+d）swoole扩展安装swoole.so
+```shell
+cd /Data/tgz
+wget http://pecl.php.net/get/swoole-1.8.4.tgz
+tar zxvf swoole-1.8.4.tgz
+cd swoole-1.8.4
+/Data/apps/php7/bin/phpize
+./configure --with-php-config=/Data/apps/php7/bin/php-config
+make && make install
+```
+e）使扩展生效：
+```shell
+vi /Data/apps/php7/etc/php.ini
+#打开 /Data/apps/php7/etc/php.ini 查找 ; extension_dir = "ext"
+#更改extension_dir的值，此值视具体情况而定
+extension_dir = "/Data/apps/php7/lib/php/extensions/no-debug-zts-20151012/"
+#在其后增加一行：
+extension = "yaf.so"
+extension = "swoole.so"
+extension = "redis.so"
+extension = "msgpack.so"
+f）其他扩展安装类似
+```
+### 5.Redis安装：
+1）Redis安装目录  
+`mkdir -p /Data/apps/redis`  
+2）redis源码安装
+```shell
+cd /Data/tgz
+wget http://download.redis.io/releases/redis-3.0.7.tar.gz
+cd redis-3.0.7
+make PREFIX=/Data/apps/redis install #安装到指定目录中
+```
+注：在安装redis成功后，你将可以在/usr/local/redis看到一个bin的目录，里面包括了以下文件：
+redis-benchmark  redis-check-aof  redis-check-dump  redis-cli  redis-server
+其中：
+redis-server：Redis服务器的daemon启动程序
+redis-cli：Redis命令行操作工具。或者通过telnet进行纯文本协议操作
+redis-benchmark：Redis性能测试工具，测试Redis在你的系统及你的配置下的读写性能
+3）将redis做成一个服务
+```shell
+#必须将其复制到/etc/rc.d/init.d的目录下,将redis_init_script复制到/etc/rc.d/init.d/，同时易名为redis。
+cp /Data/tgz/redis-3.0.7/utils/redis_init_script /etc/rc.d/init.d/redis
+
+#如果这时添加注册服务：
+chkconfig --add redis
+#将报以下错误：
+redis服务不支持chkconfig
+#为此，我们需要更改redis脚本。 
+vi /etc/rc.d/init.d/redis
+#!/bin/sh 
+#chkconfig: 2345 80 90 #添加这一行
+
+#同时修改
+EXEC=/Data/apps/redis/bin/redis-server
+CLIEXEC=/Data/apps/redis/bin/redis-cli
+
+.将redis配置文件拷贝到/etc/redis/${REDISPORT}.conf 
+mkdir /etc/redis
+cp /Data/tgz/redis-3.0.7/redis.conf /etc/redis/6379.conf
+cp /Data/tgz/redis-3.0.7/redis.conf /Data/apps/redis/bin/redis.conf
+```
+4）redis配置密码
+去掉行前的注释，并修改密码为所需的密码,保存文件  
+requirepass foobared  
+requirepass myRedis  
+5）redis的一些配置 redis的持久化有rdb和aof两种。 rdb是记录一段时间内的操作，一盘的配置是一段时间内操作超过多少次就持久化。 aof可以实现每次操作都持久化。 这里我们使用aof。
+配置方式，打开redis的配置文件。找到appendonly。默认是appendonly no。改成appendonly yes。
+redis.conf参数： daemonize：是否以后台daemon方式运行 pidfile：pid文件位置 port：监听的端口号 timeout：请求超时时间 loglevel：log信息级别 logfile：log文件位置 databases：开启数据库的数量 save * ：保存快照的频率，第一个表示多长时间（秒级），第三个*表示执行多少次写操作。在一定时间内执行一定数量的写操作时，自动保存快照。可设置多个条件。 rdbcompression：是否使用压缩 dbfilename：数据快照文件名（只是文件名，不包括目录） dir：数据快照的保存目录（这个是目录） appendonly：是否开启appendonlylog，开启的话每次写操作会记一条log，这会提高数据抗风险能力，但影响效率。 appendfsync：appendonlylog如何同步到磁盘（三个选项，分别是每次写都强制调用fsync、每秒启用一次fsync、不调用fsync等待系统自己同步） slaveof ：主从配置，在redis-slave上配置master的ip port，即可
+这样，redis服务脚本指定的CONF就存在了。默认情况下，Redis未启用认证，可以通过开启6379.conf的requirepass 指定一个验证密码。  
+6）注册redis服务  
+```shell
+chkconfig --add redis
+chkconfig redis on
+```
+7）加到环境变量中
+```shell
+#将Redis的命令所在目录添加到系统参数PATH中 
+vi /etc/profile
+#在最后行追加: 
+export PATH="$PATH:/Data/apps/redis/bin"
+
+#然后马上应用这个文件： 
+./etc/profile
+#或者
+source /etc/profile
+
+#这样就可以直接调用redis-cli的命令了，如下所示： 
+redis-cli     
+redis 127.0.0.1:6379> auth mypasswd   
+OK
+redis 127.0.0.1:6379>
+```
+8）启动redis服务 
+a）直接启动
+```shell
+./redis-server ./redis.conf &
+#如果更改了端口，使用`redis-cli`客户端连接时，也需要指定端口，例如：
+redis-cli -p 6380
+```
+b）使用Redis启动脚本设置开机自启动(推荐)  
+`service redisd start`  
+c）关闭之前备份
+```shell
+#有密码
+./redis-cli -a your_passwd save
+#无密码
+./redis-cli save
+```
+d）停止
+```shell
+#使用客户端
+redis-cli shutdown
+#因为Redis可以妥善处理SIGTERM信号，所以直接kill -9也是可以的
+kill -9 PID
+#指定密码关闭
+/Data/apps/redis/bin/redis-cli -a your_passwd shutdown
+```
+e）再说一点关于备份的方式
+```shell
+#在从服务器上执行下列命令：
+redis-cli save  
+#关闭redis服务器  
+redis-cli shutdown  
+#然后，拷贝数据目录下的rdb文件。
+```

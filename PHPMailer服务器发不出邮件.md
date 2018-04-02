@@ -8,7 +8,7 @@ tags:
  - PHPMailer
 categories:
  - php
- keywords:
+keywords:
   - PHPMailer
 ----
 

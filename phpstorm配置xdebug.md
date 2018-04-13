@@ -45,7 +45,7 @@ xdebug.idekey=PHPSTROM
  2.添加server
  ![](https://pic.me33.cn/2018-04-13-090849.png)
  3.添加php web application
- ![](https://pic.me33.cn/2018-04-13-090629.png)
+ ![](https://pic.me33.cn/2018-04-13-092228.png)
  ![](https://pic.me33.cn/2018-04-13-091009.png)
  
  

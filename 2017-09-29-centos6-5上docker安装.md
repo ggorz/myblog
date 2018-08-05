@@ -1,17 +1,8 @@
 ---
+layout: post
 title: centos6.5上docker安装
-comments: true
-thumbnailImage: https://pic.me33.cn/2017-09-29-063855.jpg
-thumbnailImagePosition: right
 date: 2017-09-29 14:33:06
-tags:
- - linux
- - docker
-categories:
- - linux
-keywords:
- - docker安装
- - Linux内核升级
+categories: docker
 ---
 
 

@@ -1,17 +1,10 @@
 ---
+layout: post
 title: mac上配置iterm2支持rzsz命令
-comments: true
-thumbnailImage: https://pic.me33.cn/2018-04-02-060034.png
-thumbnailImagePosition: right
 date: 2017-04-02 10:30:00
-tags:
- - iterm2
-categories:
- - mac
-keywords:
- - rzlz
- - iterm2
+categories: iterm2
 ---
+
 
 
 首先mac自带的终端是不支持lrzsz的，需要下载安装iterm2,[下载地址](http://www.iterm2.cn/download)。[lrzse官方下载地址](https://ohse.de/uwe/software/lrzsz.html)

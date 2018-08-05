@@ -1,19 +1,10 @@
 ---
+layout: post
 title: 简单配置nginx使之支持pathinfo
-comments: true
-thumbnailImage: https://pic.me33.cn/2017-09-25-143640.jpg
-thumbnailImagePosition: right
 date: 2017-09-25 22:38:01
-tags:
- - php
- - pathinfo
-categories:
- - php
-keywords:
- - pathinfo配置
- - Nginx
- - thinkPHP
+categories: pathinfo
 ---
+
 
 pathinfo不是nginx的功能，pathinfo是php的功能;php中有两个pathinfo，一个是环境变量$_SERVER['PATH_INFO']；另一个是pathinfo函数，pathinfo() 函数以数组的形式返回文件路径的信息。
 <!-- excerpt -->

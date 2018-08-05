@@ -1,22 +1,8 @@
 ---
+layout: post
 title: php相关的cgi概念
-comments: true
-thumbnailImage: https://pic.me33.cn/2017-11-29-025802.png
-thumbnailImagePosition: right
-date: 2017-11-29
-tags:
- - php
- - cgi
-categories:
- - php
- - nginx
-keywords:
- - CGI
- - Nginx
- - fastcgi
- - PHP-CGI
- - PHP-FPM
- - Spawn-FCGI
+date: 2017-11-29 22:38:01
+categories: CGI
 ---
 
 

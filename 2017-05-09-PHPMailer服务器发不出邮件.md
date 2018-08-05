@@ -1,16 +1,10 @@
+---
+layout: post
 title: PHPMailer服务器发送邮件
-comments: true
-thumbnailImage: https://pic.me33.cn/2018-04-02-055534.png
-thumbnailImagePosition: right
-date: 2017-05-09
-tags:
- - php
- - PHPMailer
-categories:
- - php
-keywords:
-  - PHPMailer
-----
+date: 2017-05-09 09:48:08
+categories: PHPMailer
+---
+
 
 phpMailer的使用还是挺简单的，基本上把类引进来去配置一些参数就可以使用了
 

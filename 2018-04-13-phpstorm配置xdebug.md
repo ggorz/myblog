@@ -1,17 +1,10 @@
 ---
+layout: post
 title: phpstorm配置xdebug
-comments: true
-thumbnailImage: https://pic.me33.cn/2018-04-13-085558.png
-thumbnailImagePosition: right
-date: 2018/4/13 下午4:54
-tags:
- - phpstorm
-categories:
- - ide
-keywords:
- - phpstrom
- - xdebug
+date: 2018-04-13 09:48:08
+categories: phpstrom
 ---
+
 
 配置了好久终于配置成功了；简单记录一下步骤要点。
 

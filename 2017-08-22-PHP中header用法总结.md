@@ -1,16 +1,10 @@
 ---
+layout: post
 title: PHP中header用法总结
 date: 2017-08-22 09:48:08
-tags:
- - php
- - header
-categories:
- - php
-keywords:
- - php函数
- - heasder
-thumbnailImage: https://pic.me33.cn/2017-08-22-041624.jpg
+categories: php函数
 ---
+
 
 header()函数的作用是：header() 函数向客户端发送原始的HTTP报头。发送一个原始 HTTP 标头[Http Header]到客户端。
 标头 (header) 是服务器以 HTTP 协义传 HTML 资料到浏览器前所送出的字串，在标头与 HTML文件之间尚需空一行分隔。有关 HTTP 的详细说明，可以参考 [RFC2068官方文件](//www.w3.org/Protocols/rfc2068/rfc2068)。 在 PHP 中送回 HTML 资料前，会首先 传>完所有的标头。
